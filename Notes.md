@@ -5,4 +5,8 @@ We need two repos:
 Whether to use GitHub Apps or OAuth?  
   I have already created a GitHubApp.
 
+We can host the server on replit: https://replit.com/talk/learn/Web-Server-Using-Nodejs/39555
+
+And GitHub App can be deployed on that server: https://docs.github.com/en/apps/creating-github-apps/guides/using-the-github-api-in-your-app
+
 Manifests allow people to create preconfigured GitHub Apps, see [Creating a GitHub App from a manifest.](https://docs.github.com/en/apps/creating-github-apps/creating-github-apps/creating-a-github-app-from-a-manifest)
