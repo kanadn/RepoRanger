@@ -15,6 +15,9 @@ const commands = [{
       type: 3
     }
   ]
+},{
+  name: 'help',
+  description: 'Replies with the list of all possible commands'
 }, {
   name: 'issueinfo',
   description: 'Replies with info of issue!'
@@ -25,16 +28,29 @@ const commands = [{
     {
       name: "title",
       description: "Enter the title of the issue",
-      type: 3
+      type: 3,
+      required: true
     }, {
       name: "body",
-      description: "Enter the discription of the issue",
-      type: 3
+      description: "Enter the description of the issue",
+      type: 3,
+      required: true
     }
   ]
 }, {
   name: 'collaboratorinfo',
   description: 'Replies with info of collaborators!'
+}, {
+  name: 'collaboratoradd',
+  description: 'Replies by adding the new collaborators!',
+  options: [
+    {
+      name: "username",
+      description: "Enter the username of the collaborator",
+      type: 3,
+      required: true
+    }
+  ]
 }, {
   name: 'pullinfo',
   description: 'Replies with list of pull requests'
