@@ -7,10 +7,9 @@ const client = new Client({
   ],
 });
 
-//Sarthak's token: auth: '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'
 const octokit = new Octokit({
   //this is the token from github for one individual
-  auth: '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'
+  auth: process.env['GITHUB_ACCESS_TOKEN']
 })
 
 const token = process.env['token']  //part of the secret key containing bot token
@@ -30,22 +29,22 @@ client.on('interactionCreate', async interaction => {
 
   else if (interaction.commandName === 'help') {
     await interaction.reply('Please use commands below');
-    
+
     const embed = new EmbedBuilder()
       .setColor('#0099ff')
       .setTitle('Help Command')
       .setDescription('List of commands used by the bot')
-      .addFields({name: "issueinfo", value: "Displays the information about issues"},
-                 {name: "issuemake", value: "Creates a new issue, requires Title and Body"},
-                 {name: "pullinfo", value: "List all pull requests"},
-                 {name: "collaboratorinfo", value: "Lists all collaborators information"},
-                 {name: "collaboratoradd", value: "Adds a user as a collaborator"},)
+      .addFields({ name: "issueinfo", value: "Displays the information about issues" },
+        { name: "issuemake", value: "Creates a new issue, requires Title and Body" },
+        { name: "pullinfo", value: "List all pull requests" },
+        { name: "collaboratorinfo", value: "Lists all collaborators information" },
+        { name: "collaboratoradd", value: "Adds a user as a collaborator" },)
       .setTimestamp();
 
     const channel = client.channels.cache.find(channel => channel.name === 'general');
     channel.send({ embeds: [embed] });
   }
-  
+
   //getting infor about the issues in the given repo
   else if (interaction.commandName === 'issueinfo') {
     await interaction.reply('Issue information was displayed!');
@@ -76,8 +75,8 @@ client.on('interactionCreate', async interaction => {
       if (!issue.body) {
         issue.body = ' ';
       }
-      embed.addFields({ name: issue.title, value: issue.body +'\n'+ issue.html_url},);
-      
+      embed.addFields({ name: issue.title, value: issue.body + '\n' + issue.html_url },);
+
     });
 
     //Send the embed to a specific channel
@@ -135,7 +134,7 @@ client.on('interactionCreate', async interaction => {
         collab.login = ' ';
       }
       //embed.addFields({ name: " ", value:" "+[collab.login](collab.html_url)})not working
-      embed.addFields({ name: collab.login, value: collab.html_url},);
+      embed.addFields({ name: collab.login, value: collab.html_url },);
     });
     //Send the embed to a specific channel
     const channel = client.channels.cache.find(channel => channel.name === 'general');
