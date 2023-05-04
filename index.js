@@ -15,7 +15,7 @@ const commands = [{
       type: 3
     }
   ]
-},{
+}, {
   name: 'help',
   description: 'Replies with the list of all possible commands'
 }, {
@@ -41,6 +41,15 @@ const commands = [{
   name: 'collaboratorinfo',
   description: 'Replies with info of collaborators!'
 }, {
+  name: 'workflowinfo',
+  description: 'Replies with a list of workflows'
+}, {
+  name: 'triggerworkflow',
+  description: 'Manually triggers a workflow'
+}, {
+  name: 'branchinfo',
+  description: 'Replies with list of all branches in the repo'
+},{
   name: 'collaboratoradd',
   description: 'Replies by adding the new collaborators!',
   options: [

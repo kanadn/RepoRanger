@@ -37,15 +37,18 @@ client.on('interactionCreate', async interaction => {
       .addFields({ name: "issueinfo", value: "Displays the information about issues" },
         { name: "issuemake", value: "Creates a new issue, requires Title and Body" },
         { name: "pullinfo", value: "List all pull requests" },
-        { name: "collaboratorinfo", value: "Lists all collaborators information" },
-        { name: "collaboratoradd", value: "Adds a user as a collaborator" },)
+        { name: "collaboratorinfo", value: "Lists information of all collaborators" },
+        { name: "collaboratoradd", value: "Adds a user as a collaborator" },
+        { name: "workflowinfo", value: "Replies with a list of workflows" },
+        { name: "triggerworkflow", value: "Manually triggers a workflow" },
+        { name: "branchinfo", value: "Replies with list of all branches in the repo" })
       .setTimestamp();
 
     const channel = client.channels.cache.find(channel => channel.name === 'general');
     channel.send({ embeds: [embed] });
   }
 
-  //getting infor about the issues in the given repo
+  //getting info about the issues in the given repo
   else if (interaction.commandName === 'issueinfo') {
     await interaction.reply('Issue information was displayed!');
     const issueList = await octokit.request('GET /repos/{owner}/{repo}/issues', {
@@ -64,10 +67,7 @@ client.on('interactionCreate', async interaction => {
       .setDescription('List of issues from the RepoRanger project')
       .setTimestamp();
 
-    // The issueList is already a JavaScript object. Now we need to figure out a way to properly print this data in an embed.
-    //console.log(issueList.data);
     issueList.data.forEach(issue => {
-      console.log(typeof issue.title);
       //Needs proper error handling. This is temporary
       if (!issue.title) {
         issue.title = ' ';
@@ -88,7 +88,7 @@ client.on('interactionCreate', async interaction => {
   else if (interaction.commandName === 'issuemake') {
     const titleinput = interaction.options.getString('title');
     const bodyinput = interaction.options.getString('body');
-    await interaction.reply('Issue was made!');
+    await interaction.reply('Issue was created!');
     await octokit.request('POST /repos/{owner}/{repo}/issues', {
       owner: 'kanadn',
       repo: 'RepoRanger-Playground',
@@ -126,7 +126,6 @@ client.on('interactionCreate', async interaction => {
       .setDescription('List of collaborators from the RepoRanger project')
       .setTimestamp();
 
-    //console.log(collablist);
     collablist.data.forEach(collab => {
       console.log(typeof collab.login);
       //Needs proper error handling. This is temporary
@@ -140,7 +139,73 @@ client.on('interactionCreate', async interaction => {
     const channel = client.channels.cache.find(channel => channel.name === 'general');
     channel.send({ embeds: [embed] });
   }
-  else if (interaction.commandName === 'collaboratoradd') {
+  else if (interaction.commandName === 'workflowinfo') {
+    const worflow_info = await octokit.request('GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}', {
+      owner: 'kanadn',
+      repo: 'RepoRanger-Playground',
+      workflow_id: 'github-actions-demo.yml',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+    console.log('Get workflow request dump:', worflow_info);
+
+    const wf_embed = new EmbedBuilder()
+      .setColor('#0099ff')
+      .setTitle('Workflow info for Reporanger-playground')
+      .setTimestamp();
+    
+    wf_embed.addFields({ name: worflow_info.data.name, value: worflow_info.data.state + '\n' + worflow_info.data.html_url });
+
+    //Send the embed to a specific channel
+    const channel = client.channels.cache.find(channel => channel.name === 'general');
+    channel.send({ embeds: [wf_embed] });
+  }
+
+  else if (interaction.commandName === 'triggerworkflow') {
+    const triggerWF = await octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
+      owner: 'kanadn',
+      repo: 'RepoRanger-Playground',
+      workflow_id: 'github-actions-demo.yml',
+      ref: 'main',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+
+    if(triggerWF.status == 204){
+      await interaction.reply('Workflow trigger successful!');
+    }
+  }
+    
+  else if (interaction.commandName === 'branchinfo') {
+    await interaction.reply('All branches in the repo');
+    const collablist = await octokit.request('GET /repos/{owner}/{repo}/branches', {
+      owner: 'kanadn',
+      repo: 'RepoRanger-Playground',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+    const embed = new EmbedBuilder()
+      .setColor('#0099ff')
+      .setTitle('Branches')
+      .setDescription('List of all branches in the repository')
+      .setTimestamp();
+
+    collablist.data.forEach(collab => {
+      //Needs proper error handling. This is temporary
+      if (!collab.name) {
+        collab.name = ' ';
+      }
+      embed.addFields({ name: collab.name, value: " " },);
+    });
+    //Send the embed to a specific channel
+    const channel = client.channels.cache.find(channel => channel.name === 'general');
+    channel.send({ embeds: [embed] });
+  }
+    
+  if (interaction.commandName === 'collaboratoradd') {
     const username = interaction.options.getString('username');
     console.log('Got username:', username);
     await interaction.reply('Collaborator has been added');
