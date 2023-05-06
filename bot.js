@@ -1,3 +1,5 @@
+const AUTO_TEST = false; // Set to true to run the bot in auto-test mode
+
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');  //used to download discord js 
 const { Octokit } = require("@octokit/rest");  //used to connect with the github Rest api
 const client = new Client({
@@ -66,7 +68,8 @@ client.on('interactionCreate', async interaction => {
       .setTitle('Issues on the board')
       .setDescription('List of issues from the RepoRanger project')
       .setTimestamp();
-
+    
+    console.log(issueList);
     issueList.data.forEach(issue => {
       //Needs proper error handling. This is temporary
       if (!issue.title) {
@@ -219,5 +222,109 @@ client.on('interactionCreate', async interaction => {
     }))
   }
 });
+
+(async() => {
+
+  if (AUTO_TEST == true) {
+    //Test issue fetch
+    const issueListTest = await octokit.request('GET /repos/{owner}/{repo}/issues', {
+      owner: 'kanadn',
+      repo: 'RepoRanger-Playground',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28',
+        'accept': 'application/json'
+      }
+    })
+  
+    if(issueListTest.status == 200){
+      console.log('/issueinfo test passed!');
+    }
+  
+    //Test issue creation
+    const issueMakeTest = await octokit.request('POST /repos/{owner}/{repo}/issues', {
+      owner: 'kanadn',
+      repo: 'RepoRanger-Playground',
+      title: 'Auto test issue',
+      body: 'Auto test issue body',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+  
+    if(issueMakeTest.status == 201){
+      console.log('/issuemake test passed!');
+    }
+  
+    //Test collaborator fetch
+    const collabListTest = await octokit.request('GET /repos/{owner}/{repo}/collaborators', {
+      owner: 'kanadn',
+      repo: 'RepoRanger-Playground',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28',
+        'accept': 'application/json'
+      }
+    })
+  
+    if(collabListTest.status == 200){
+      console.log('/collaboratorinfo test passed!');
+    }
+  
+    //Test collaborator add
+    const collaboratorAddTest = await octokit.request('PUT /repos/{owner}/{repo}/collaborators/{username}', {
+      owner: 'kanadn',
+      repo: 'RepoRanger-Playground',
+      username: 'sift66',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+  
+    if(collaboratorAddTest.status == 201){
+      console.log('/collaboratoradd test passed!');
+    }
+  
+    //Test branch fetch
+    const branchInfoTest = await octokit.request('GET /repos/{owner}/{repo}/branches', {
+      owner: 'kanadn',
+      repo: 'RepoRanger-Playground',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+  
+    if(branchInfoTest.status == 200){
+      console.log('/branchinfo test passed!');
+    }
+  
+    //Test workflow fetch
+    const worflowInfoTest = await octokit.request('GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}', {
+      owner: 'kanadn',
+      repo: 'RepoRanger-Playground',
+      workflow_id: 'github-actions-demo.yml',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+  
+    if(worflowInfoTest.status == 200){
+      console.log('/workflowinfo test passed!');
+    }
+  
+    //Test workflow trigger
+    const triggerWFTest = await octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
+      owner: 'kanadn',
+      repo: 'RepoRanger-Playground',
+      workflow_id: 'github-actions-demo.yml',
+      ref: 'main',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+  
+    if(triggerWFTest.status == 204){
+      console.log('/triggerworkflow test passed!');
+    }
+  }
+})();
 
 client.login(token);
