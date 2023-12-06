@@ -14,7 +14,7 @@
     "@octokit/core": "^4.2.0",
     "@octokit/rest": "^19.0.7",
     "@types/node": "^18.0.6",
-    "discord-api-types": "^0.37.35",
+    "discord-api-types": "^0.37.63",
     "discord.js": "^14.7.1",
     "node-fetch": "^3.3.0"
   },
